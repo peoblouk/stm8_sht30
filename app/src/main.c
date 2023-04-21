@@ -1,7 +1,7 @@
 #include "stm8s.h"
 #include "delay.h"
 #include "LCD_I2C.h"
-#include "milis.h"
+// #include "milis.h"
 #include "lm75a.h"
 
 // Indikační LED
@@ -12,9 +12,9 @@
 
 void setup(void)
 {
-    CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1);           // Předdělička DIV1
-    delay_init();                                            // Incializace časovače TIM4
-    init_milis();                                            // Iniciaizace millis TIM2
+    CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1); // Předdělička DIV1
+    delay_init();                                  // Incializace časovače TIM4
+    // init_milis();                                            // Iniciaizace millis TIM2
     GPIO_Init(LED_PORT, LED_PIN, GPIO_MODE_OUT_PP_LOW_SLOW); // Pin LED RED
     LCD_I2C_Init(0x27, 16, 2);                               // Inicializace LCD
     LM75A_Init(TEPLOMER);                                    // Inicializace teploměrů
@@ -34,33 +34,35 @@ void blink(void)
 int main(void)
 {
     uint8_t data_teplomer[2]; // Proměnná pro uložení teploty
-    uint16_t cas_Ted = 0;     // Proměnná pro millis
-    char buffer[48];          // Proměnná pro zápis na displej
+    // uint16_t cas_Ted = 0;     // Proměnná pro millis
+    char buffer[48]; // Proměnná pro zápis na displej
     uint8_t posun = 0;
+    uint8_t posun2 = 7;
 
     setup();                    // Inicializace všech periferií
     LCD_I2C_SetCursor(0, 0);    // Nastavení kurzoru
     LCD_I2C_Print("Teplota :"); // Úvodní obrazovka na displej
     while (1)
     {
-        if ((get_milis() - cas_Ted) > 2000)
+        LM75A_ReadTemperature(TEPLOMER, data_teplomer); // Čtení teploty
+
+        if (posun >= 7)
         {
-            cas_Ted = get_milis();                          // Milis now
-            LM75A_ReadTemperature(TEPLOMER, data_teplomer); // Čtení teploty
-
-            if (posun <= 4)
-            {
-                posun = 0;
-            }
-            else
-            {
-                posun++;
-            }
-
-            LCD_I2C_Clear();
-            LCD_I2C_SetCursor(posun, 1);                                        // Nastavení kurzoru
-            sprintf(buffer, "T = %d.%d C", data_teplomer[0], data_teplomer[1]); // Zformátování stringu
-            LCD_I2C_Print(buffer);                                              // Vytiskni na displej
+            posun = 0;
+            posun2 = 7;
         }
+        else
+        {
+            posun++;
+            posun2--;
+        }
+        LCD_I2C_Clear();
+        LCD_I2C_SetCursor(posun2, 0);                                           // Nastavení kurzoru
+        LCD_I2C_Print("Teplota :");                                        // Úvodní obrazovka na displej
+        LCD_I2C_SetCursor(posun, 1);                                       // Nastavení kurzoru
+        sprintf(buffer, "T= %d.%d C", data_teplomer[0], data_teplomer[1]); // Zformátování stringu
+        LCD_I2C_Print(buffer);                                             // Vytiskni na displej
+        blink();
+        delay_ms(2000);
     }
 }
