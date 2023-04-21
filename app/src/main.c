@@ -12,16 +12,16 @@
 
 void setup(void)
 {
-    CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1);               // Předdělička DIV1
-    delay_init();                                                // Incializace časovače TIM4
-    init_milis();                                                // Iniciaizace millis TIM2
-    GPIO_Init(LED_PORT, LED_PIN_RED, GPIO_MODE_OUT_PP_LOW_SLOW); // Pin LED RED
-    LCD_I2C_Init(0x27, 16, 2);                                   // Inicializace LCD
-    LM75A_Init(TEPLOMER);                                        // Inicializace teploměrů
-    GPIO_Init(LED_PORT, LED_PIN, GPIO_MODE_OUT_PP_LOW_SLOW);     // Inicializace LED
+    CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1);           // Předdělička DIV1
+    delay_init();                                            // Incializace časovače TIM4
+    init_milis();                                            // Iniciaizace millis TIM2
+    GPIO_Init(LED_PORT, LED_PIN, GPIO_MODE_OUT_PP_LOW_SLOW); // Pin LED RED
+    LCD_I2C_Init(0x27, 16, 2);                               // Inicializace LCD
+    LM75A_Init(TEPLOMER);                                    // Inicializace teploměrů
+    GPIO_Init(LED_PORT, LED_PIN, GPIO_MODE_OUT_PP_LOW_SLOW); // Inicializace LED
     LCD_I2C_Print("Ultra Patrik");
     delay_ms(1000);
-    LCD_I2C_Clear
+    LCD_I2C_Clear();
 }
 
 void blink(void)
